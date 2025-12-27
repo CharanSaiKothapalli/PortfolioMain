@@ -36,10 +36,32 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(section);
     });
 
+    // Staggered animation for skills and projects
+    const staggerObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                staggerObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.skill-box, .project-item').forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        item.style.transition = `opacity 0.5s ease-out ${index % 3 * 0.2}s, transform 0.5s ease-out ${index % 3 * 0.2}s`;
+        staggerObserver.observe(item);
+    });
+
     // Add visible class style dynamically
     const style = document.createElement('style');
     style.innerHTML = `
         .section.visible {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+        .skill-box.visible,
+        .project-item.visible {
             opacity: 1 !important;
             transform: translateY(0) !important;
         }
