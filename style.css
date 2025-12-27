@@ -608,6 +608,15 @@ a {
     .hero-text-left,
     .hero-text-right {
         padding: 0;
+        text-align: center;
+    }
+
+    .hero-desc {
+        margin: 1.5rem auto 0;
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+        padding: 0 1rem;
     }
 
     .main-heading,
@@ -797,8 +806,130 @@ a {
         width: 40px;
         height: 40px;
     }
+}
 
-    .floating-toggle:hover {
-        transform: scale(1.1);
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Hero Animations */
+.hero-text-left .sub-heading {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+    /* Start hidden */
+}
+
+.hero-text-left .main-heading {
+    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+    opacity: 0;
+}
+
+.hero-image-container {
+    animation: popIn 1s ease-out 0.4s forwards;
+    opacity: 0;
+}
+
+.hero-text-right .main-heading-right {
+    animation: fadeInUp 0.8s ease-out 0.6s forwards;
+    opacity: 0;
+}
+
+.hero-desc {
+    animation: fadeInUp 0.8s ease-out 0.8s forwards;
+    opacity: 0;
+}
+
+.floating-badge {
+    animation: float 3s ease-in-out infinite, popIn 0.5s ease-out 1s forwards;
+    opacity: 0;
+}
+
+/* Enhanced Hover Effects */
+.skill-box:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.project-item:hover {
+    transform: scale(1.01);
+    transition: transform 0.3s;
+}
+
+.contact-btn {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Staggered Animation Classes */
+.skill-box.visible,
+.project-item.visible {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+/* Contact Details */
+.contact-details {
+    margin-bottom: 2rem;
+    color: #000;
+    /* Ensure text is visible on accent background */
+}
+
+.contact-details p {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.contact-details i {
+    margin-right: 0.5rem;
+}
+/* Intro Animation Styles */
+#main-content { opacity: 0; transition: opacity 1.5s ease-in-out; }
+#main-content.content-visible { opacity: 1; }
+#intro-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; background-color: #000; pointer-events: none; }
