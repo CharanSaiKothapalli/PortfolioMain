@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Material for particles
     const particlesMaterial = new THREE.PointsMaterial({
         size: 0.02,
-        color: 0xccff00, // Accent color
+        color: 0x38bdf8, // Accent color
         transparent: true,
         opacity: 0.8,
     });
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Connecting Lines (Neural Network effect)
     const lineMaterial = new THREE.LineBasicMaterial({
-        color: 0xccff00,
+        color: 0x38bdf8,
         transparent: true,
         opacity: 0.15
     });
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // For performance, let's add a subtle wireframe sphere in the background
     const sphereGeometry = new THREE.IcosahedronGeometry(4, 1);
     const sphereMaterial = new THREE.MeshBasicMaterial({
-        color: 0xccff00,
+        color: 0x38bdf8,
         wireframe: true,
         transparent: true,
         opacity: 0.05
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // We can add more objects and toggle their visibility based on scroll
     const torusGeometry = new THREE.TorusGeometry(2, 0.5, 16, 100);
     const torusMaterial = new THREE.MeshBasicMaterial({
-        color: 0xccff00,
+        color: 0x38bdf8,
         wireframe: true,
         transparent: true,
         opacity: 0.05
