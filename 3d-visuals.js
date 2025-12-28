@@ -15,26 +15,48 @@ document.addEventListener('DOMContentLoaded', () => {
     container.style.left = '0';
     container.style.width = '100%';
     container.style.height = '100%';
-    container.style.zIndex = '-1'; // Behind everything
+    container.style.zIndex = '0'; // Behind content, but visible
     container.style.pointerEvents = 'none'; // Allow clicking through
     document.body.prepend(container);
     container.appendChild(renderer.domElement);
 
+    // --- Theme Management ---
+    const themes = {
+        dark: {
+            particle: 0x38bdf8, // Sky Blue
+            line: 0x38bdf8,
+            sphere: 0x38bdf8,
+            torus: 0x38bdf8
+        },
+        light: {
+            particle: 0x0f172a, // Dark Slate (High Contrast)
+            line: 0x0f172a,
+            sphere: 0x0284c7, // Darker Blue
+            torus: 0x0284c7
+        }
+    };
+
+    function getCurrentTheme() {
+        return document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    }
+
+    let currentTheme = getCurrentTheme();
+
     // --- Hero Section: Neural Network Particles ---
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 700;
+    const particlesCount = 1500; // Increased for warp effect
     const posArray = new Float32Array(particlesCount * 3);
 
     for (let i = 0; i < particlesCount * 3; i++) {
-        posArray[i] = (Math.random() - 0.5) * 15; // Spread particles
+        posArray[i] = (Math.random() - 0.5) * 30; // Spread particles wider
     }
 
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
     // Material for particles
     const particlesMaterial = new THREE.PointsMaterial({
-        size: 0.02,
-        color: 0x38bdf8, // Accent color
+        size: 0.03,
+        color: themes[currentTheme].particle,
         transparent: true,
         opacity: 0.8,
     });
@@ -43,18 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
 
-    // Connecting Lines (Neural Network effect)
-    const lineMaterial = new THREE.LineBasicMaterial({
-        color: 0x38bdf8,
-        transparent: true,
-        opacity: 0.15
-    });
-
-    // We'll create lines dynamically in the animation loop or use a wireframe object
-    // For performance, let's add a subtle wireframe sphere in the background
+    // Connecting Lines (Neural Network effect) - Placeholder logic
+    // We'll use a wireframe sphere instead for performance and aesthetics
     const sphereGeometry = new THREE.IcosahedronGeometry(4, 1);
     const sphereMaterial = new THREE.MeshBasicMaterial({
-        color: 0x38bdf8,
+        color: themes[currentTheme].sphere,
         wireframe: true,
         transparent: true,
         opacity: 0.05
@@ -63,10 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
     scene.add(sphere);
 
     // --- Skills Section: Floating Shapes ---
-    // We can add more objects and toggle their visibility based on scroll
     const torusGeometry = new THREE.TorusGeometry(2, 0.5, 16, 100);
     const torusMaterial = new THREE.MeshBasicMaterial({
-        color: 0x38bdf8,
+        color: themes[currentTheme].torus,
         wireframe: true,
         transparent: true,
         opacity: 0.05
@@ -77,6 +91,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Camera Positioning ---
     camera.position.z = 5;
+
+    // --- Warp Speed Logic ---
+    let isWarping = false;
+    let warpSpeed = 0;
+    const targetWarpSpeed = 0.5; // Speed during warp
+
+    window.setWarpSpeed = (enable) => {
+        isWarping = enable;
+    };
 
     // --- Mouse Interaction ---
     let mouseX = 0;
@@ -93,6 +116,28 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollY = window.scrollY;
     });
 
+    // --- Theme Update Listener ---
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'data-theme') {
+                const newTheme = getCurrentTheme();
+                if (newTheme !== currentTheme) {
+                    currentTheme = newTheme;
+                    updateThemeColors();
+                }
+            }
+        });
+    });
+
+    observer.observe(document.documentElement, { attributes: true });
+
+    function updateThemeColors() {
+        const colors = themes[currentTheme];
+        particlesMaterial.color.setHex(colors.particle);
+        sphereMaterial.color.setHex(colors.sphere);
+        torusMaterial.color.setHex(colors.torus);
+    }
+
     // --- Animation Loop ---
     const clock = new THREE.Clock();
 
@@ -100,10 +145,38 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(animate);
         const elapsedTime = clock.getElapsedTime();
 
-        // Rotate Particles
-        particlesMesh.rotation.y = elapsedTime * 0.05;
-        particlesMesh.rotation.x = mouseY * 0.5;
-        particlesMesh.rotation.y += mouseX * 0.5;
+        // Warp Effect Logic
+        if (isWarping) {
+            warpSpeed = THREE.MathUtils.lerp(warpSpeed, targetWarpSpeed, 0.05);
+        } else {
+            warpSpeed = THREE.MathUtils.lerp(warpSpeed, 0, 0.05);
+        }
+
+        if (warpSpeed > 0.01) {
+            const positions = particlesGeometry.attributes.position.array;
+            for (let i = 0; i < particlesCount; i++) {
+                // Move particles towards camera (positive Z)
+                positions[i * 3 + 2] += warpSpeed;
+
+                // Reset particles if they pass the camera
+                if (positions[i * 3 + 2] > 5) {
+                    positions[i * 3 + 2] = -20; // Send back
+                    // Randomize X and Y slightly for variety
+                    positions[i * 3] = (Math.random() - 0.5) * 30;
+                    positions[i * 3 + 1] = (Math.random() - 0.5) * 30;
+                }
+            }
+            particlesGeometry.attributes.position.needsUpdate = true;
+
+            // Stretch effect (optional, simple scale z)
+            // particlesMesh.scale.z = 1 + warpSpeed * 5; 
+        } else {
+            // Normal Rotation
+            particlesMesh.rotation.y = elapsedTime * 0.05;
+            particlesMesh.rotation.x = mouseY * 0.5;
+            particlesMesh.rotation.y += mouseX * 0.5;
+        }
+
 
         // Rotate Sphere
         sphere.rotation.x += 0.001;
@@ -114,15 +187,12 @@ document.addEventListener('DOMContentLoaded', () => {
         torus.rotation.y -= 0.005;
 
         // Scroll based transformations
-        // Move camera slightly based on scroll
         camera.position.y = -scrollY * 0.002;
 
-        // Toggle visibility/position based on sections (Simple logic)
-        // Hero is at top (scrollY ~ 0)
-        // Skills is further down
-
-        // Parallax effect for particles
-        particlesMesh.position.y = scrollY * 0.001;
+        // Parallax effect for particles (only when not warping)
+        if (!isWarping && warpSpeed < 0.01) {
+            particlesMesh.position.y = scrollY * 0.001;
+        }
 
         renderer.render(scene, camera);
     }
