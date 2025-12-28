@@ -1,158 +1,185 @@
 (function () {
     // Immediate execution
     const mainContent = document.getElementById('main-content');
+    const heroCharan = document.getElementById('hero-charan'); // Target element
 
-    const introCanvas = document.createElement('canvas');
-    introCanvas.id = 'intro-canvas';
-    introCanvas.style.position = 'fixed';
-    introCanvas.style.top = '0';
-    introCanvas.style.left = '0';
-    introCanvas.style.width = '100%';
-    introCanvas.style.height = '100%';
-    introCanvas.style.zIndex = '99999';
-    // Transparent background to show website background
-    introCanvas.style.backgroundColor = 'transparent';
-    introCanvas.style.pointerEvents = 'none';
-    document.body.appendChild(introCanvas);
+    // Create Intro Overlay
+    const introOverlay = document.createElement('div');
+    introOverlay.id = 'intro-overlay';
 
-    if (typeof THREE === 'undefined') {
-        console.error('Three.js not loaded');
-        finishIntro();
-        return;
+    // Create Decorative Blobs
+    const blob1 = document.createElement('div');
+    blob1.className = 'intro-blob intro-blob-1';
+    introOverlay.appendChild(blob1);
+
+    const blob2 = document.createElement('div');
+    blob2.className = 'intro-blob intro-blob-2';
+    introOverlay.appendChild(blob2);
+
+    // Create Text Wrapper
+    const textWrapper = document.createElement('div');
+    textWrapper.className = 'intro-text-wrapper';
+    textWrapper.style.zIndex = '10'; // Above lines
+
+    // Create Text
+    const introText = document.createElement('h1');
+    introText.className = 'intro-text';
+    introText.textContent = 'CHARAN';
+
+    // Assemble
+    textWrapper.appendChild(introText);
+    introOverlay.appendChild(textWrapper);
+    document.body.appendChild(introOverlay);
+
+    // --- 3D Warp Trigger ---
+    // Wait for 3d-visuals.js to load and define setWarpSpeed
+    const checkWarp = setInterval(() => {
+        if (window.setWarpSpeed) {
+            window.setWarpSpeed(true); // Engage Warp Drive
+            clearInterval(checkWarp);
+        }
+    }, 100);
+
+    // --- CSS Speed Lines (Restored) ---
+    // Determine Theme for Colors
+    const isLightMode = document.documentElement.getAttribute('data-theme') === 'light';
+    const speedLineColor = isLightMode ? 'rgba(15, 23, 42, 0.15)' : 'rgba(255, 255, 255, 0.15)';
+
+    // Create Speed Lines Container
+    const speedLinesContainer = document.createElement('div');
+    speedLinesContainer.style.position = 'absolute';
+    speedLinesContainer.style.width = '100%';
+    speedLinesContainer.style.height = '100%';
+    speedLinesContainer.style.overflow = 'hidden';
+    speedLinesContainer.style.zIndex = '1';
+    // Insert before text wrapper (which is z-index 10)
+    introOverlay.insertBefore(speedLinesContainer, textWrapper);
+
+    function createSpeedLine() {
+        const line = document.createElement('div');
+        line.style.position = 'absolute';
+        line.style.width = Math.random() * 2 + 1 + 'px';
+        line.style.height = Math.random() * 150 + 50 + 'px';
+        line.style.background = speedLineColor;
+        line.style.left = Math.random() * 100 + '%';
+        line.style.top = '100%';
+        line.style.borderRadius = '2px';
+        line.style.animation = `speedLine ${Math.random() * 0.4 + 0.2}s linear`;
+        speedLinesContainer.appendChild(line);
+
+        line.addEventListener('animationend', () => {
+            line.remove();
+        });
     }
 
-    const scene = new THREE.Scene();
+    // Add keyframes for speed lines if not exists
+    if (!document.getElementById('speed-line-style')) {
+        const style = document.createElement('style');
+        style.id = 'speed-line-style';
+        style.textContent = `
+            @keyframes speedLine {
+                0% { transform: translateY(0); opacity: 0; }
+                10% { opacity: 1; }
+                100% { transform: translateY(-150vh); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
 
-    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: introCanvas, antialias: true, alpha: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setClearColor(0x000000, 0); // Clear transparent
+    let speedLineInterval = setInterval(createSpeedLine, 30);
 
-    // --- Lighting ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-    scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    dirLight.position.set(5, 5, 5);
-    scene.add(dirLight);
+    // --- Animation Sequence ---
 
-    // Bright White Point Light for reflections
-    const pointLight = new THREE.PointLight(0xffffff, 2, 50);
-    pointLight.position.set(-2, 1, 2);
-    scene.add(pointLight);
+    // 1. Text Reveal (CSS Animation)
 
-    // --- Text Geometry ---
-    const loader = new THREE.FontLoader();
+    // 2. Letter Spacing Expansion (JS)
+    setTimeout(() => {
+        introText.style.transition = 'letter-spacing 1.5s ease-out, transform 1.5s ease-out';
+        introText.style.letterSpacing = '1rem';
+        introText.style.transform = 'scale(1.1)'; // Subtle scale up
+    }, 100);
 
-    function finishIntro() {
-        introCanvas.style.transition = 'opacity 0.8s ease-out';
-        introCanvas.style.opacity = '0';
-        setTimeout(() => {
-            if (introCanvas.parentNode) introCanvas.parentNode.removeChild(introCanvas);
+    // 3. FLIP Transition to Hero
+    setTimeout(() => {
+
+        // Disengage Warp Drive
+        if (window.setWarpSpeed) {
+            window.setWarpSpeed(false);
+        }
+
+        if (!heroCharan) {
+            // Fallback if hero element not found
+            introOverlay.style.opacity = '0';
             if (mainContent) {
                 mainContent.style.transition = 'opacity 1.0s ease-in-out';
                 mainContent.style.opacity = '1';
-                mainContent.classList.add('content-visible');
             }
-        }, 800);
-    }
-
-    loader.load('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/helvetiker_bold.typeface.json',
-        function (font) {
-            const textGeometry = new THREE.TextGeometry('CHARAN', {
-                font: font,
-                size: 3,
-                height: 0.5,
-                curveSegments: 20,
-                bevelEnabled: true,
-                bevelThickness: 0.05,
-                bevelSize: 0.05,
-                bevelOffset: 0,
-                bevelSegments: 8
-            });
-
-            textGeometry.computeBoundingBox();
-            const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
-            const centerOffset = - 0.5 * textWidth;
-            textGeometry.translate(centerOffset, 0, 0);
-
-            // Material - Glowing White Pop
-            const textMaterial = new THREE.MeshPhysicalMaterial({
-                color: 0xffffff, // Pure White
-                emissive: 0xffffff, // White Glow
-                emissiveIntensity: 0.4, // Intensity of glow
-                metalness: 0.8, // Metallic feel
-                roughness: 0.1, // Shiny
-                clearcoat: 1.0,
-                clearcoatRoughness: 0.0,
-                reflectivity: 1.0,
-            });
-
-            const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-            scene.add(textMesh);
-
-            // Camera Fit
-            function fitCameraToText() {
-                const aspect = window.innerWidth / window.innerHeight;
-                const fov = camera.fov * (Math.PI / 180);
-                let distance = (textWidth * 1.4 / 2) / (Math.tan(fov / 2) * aspect);
-                distance = Math.max(distance, 15);
-                return distance;
-            }
-            camera.position.z = fitCameraToText();
-
-            // Animation Loop
-            const clock = new THREE.Clock();
-            let animationTime = 0;
-            const totalDuration = 2.0;
-
-            function animate() {
-                const delta = clock.getDelta();
-                animationTime += delta;
-
-                // Camera Responsiveness
-                const desiredZ = fitCameraToText();
-                camera.position.z += (desiredZ - camera.position.z) * 0.1;
-
-                // Text Animation
-                if (animationTime < totalDuration) {
-                    // Subtle float
-                    textMesh.rotation.x = Math.sin(animationTime * 1.5) * 0.05;
-                    textMesh.rotation.y = Math.cos(animationTime * 1.5) * 0.05;
-
-                    // Light moves to create reflection changes
-                    pointLight.position.x = Math.sin(animationTime * 2) * 10;
-                    pointLight.position.y = Math.cos(animationTime * 2) * 5;
-                }
-
-                if (animationTime > 1.5) {
-                    // Fade out
-                    const fadeProgress = (animationTime - 1.5) / 0.5;
-                    introCanvas.style.opacity = Math.max(0, 1 - fadeProgress);
-                }
-
-                if (animationTime > totalDuration) {
-                    finishIntro();
-                    return;
-                }
-
-                renderer.render(scene, camera);
-                requestAnimationFrame(animate);
-            }
-            animate();
-        },
-        undefined,
-        function (err) {
-            console.error('Font loading failed', err);
-            finishIntro();
+            setTimeout(() => introOverlay.remove(), 800);
+            return;
         }
-    );
 
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+        // Get Coordinates
+        const startRect = introText.getBoundingClientRect();
+        const endRect = heroCharan.getBoundingClientRect();
+
+        // Remove CSS animation to allow manual control
+        introText.style.animation = 'none';
+        introText.style.transform = 'none';
+        introText.style.letterSpacing = 'normal';
+
+        // Prepare for transition
+        introText.style.position = 'fixed';
+        introText.style.left = startRect.left + 'px';
+        introText.style.top = startRect.top + 'px';
+        introText.style.margin = '0';
+        introText.style.width = startRect.width + 'px';
+        introText.style.transition = 'all 0.8s cubic-bezier(0.4, 0, 0.2, 1)';
+        introText.style.transformOrigin = 'top left';
+        introText.style.zIndex = '100000'; // Ensure it stays on top during flight
+
+        // Force reflow
+        void introText.offsetWidth;
+
+        // Execute Transition
+        introText.style.left = endRect.left + 'px';
+        introText.style.top = endRect.top + 'px';
+        introText.style.fontSize = window.getComputedStyle(heroCharan).fontSize;
+        introText.style.letterSpacing = window.getComputedStyle(heroCharan).letterSpacing;
+        introText.style.color = window.getComputedStyle(heroCharan).color;
+        // Remove gradient background for the text during transition to match hero text
+        introText.style.background = 'none';
+        introText.style.webkitTextFillColor = window.getComputedStyle(heroCharan).color;
+
+        // Fade out overlay background (but keep text)
+        introOverlay.style.transition = 'background-color 0.8s ease, backdrop-filter 0.8s ease';
+        introOverlay.style.backgroundColor = 'transparent';
+        introOverlay.style.backdropFilter = 'none';
+
+        // Fade out blobs and lines
+        blob1.style.opacity = '0';
+        blob2.style.opacity = '0';
+        if (speedLinesContainer) speedLinesContainer.style.opacity = '0';
+        clearInterval(speedLineInterval);
+
+        // Reveal Main Content (behind the moving text)
+        if (mainContent) {
+            mainContent.style.transition = 'opacity 0.5s ease-in-out';
+            mainContent.style.opacity = '1';
+        }
+
+        // Cleanup after transition
+        setTimeout(() => {
+            heroCharan.style.opacity = '1'; // Show real text
+            introText.style.opacity = '0'; // Hide flying text
+
+            setTimeout(() => {
+                if (introOverlay.parentNode) {
+                    introOverlay.parentNode.removeChild(introOverlay);
+                }
+            }, 200);
+        }, 800);
+
+    }, 2200); // Start transition after 2.2s
 
 })();
