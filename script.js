@@ -59,6 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
         .section.visible {
             opacity: 1 !important;
             transform: translateY(0) !important;
+            opacity: 1 !important;
+            transform: translateY(0) !important;
         }
         .skill-box.visible,
         .project-item.visible {
@@ -135,4 +137,40 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('theme', 'light');
         }
     });
+
+    // --- Get In Touch Section Logic ---
+    const mouseLight = document.getElementById('mouse-light');
+    if (mouseLight) {
+        document.addEventListener('mousemove', (e) => {
+            mouseLight.style.left = e.clientX + 'px';
+            mouseLight.style.top = e.clientY + 'px';
+        });
+    }
+
+    // Staggered animation for Get In Touch cards
+    const gitObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                gitObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.git-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `opacity 0.5s ease-out ${index * 0.1}s, transform 0.5s ease-out ${index * 0.1}s`;
+        gitObserver.observe(card);
+    });
+
+    // Add visible class style for git-cards dynamically
+    const gitStyle = document.createElement('style');
+    gitStyle.innerHTML = `
+        .git-card.visible {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+    `;
+    document.head.appendChild(gitStyle);
 });
