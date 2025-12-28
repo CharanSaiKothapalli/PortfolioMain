@@ -88,6 +88,26 @@
 
     let speedLineInterval = setInterval(createSpeedLine, 30);
 
+    // --- Firefly Particles ---
+    function createParticles() {
+        for (let i = 0; i < 15; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'intro-particle';
+
+            // Random Position near center
+            const randomX = (Math.random() - 0.5) * 40; // -20vw to 20vw
+            const randomY = (Math.random() - 0.5) * 40; // -20vh to 20vh
+
+            particle.style.left = `calc(50% + ${randomX}vw)`;
+            particle.style.top = `calc(50% + ${randomY}vh)`;
+
+            // Random Animation Delay
+            particle.style.animationDelay = `${Math.random() * 2}s`;
+
+            introOverlay.appendChild(particle);
+        }
+    }
+    createParticles();
 
     // --- Animation Sequence ---
 
@@ -95,7 +115,7 @@
 
     // 2. Letter Spacing Expansion (JS)
     setTimeout(() => {
-        introText.style.transition = 'letter-spacing 1.5s ease-out, transform 1.5s ease-out';
+        introText.style.transition = 'letter-spacing 0.8s ease-out, transform 0.8s ease-out';
         introText.style.letterSpacing = '1rem';
         introText.style.transform = 'scale(1.1)'; // Subtle scale up
     }, 100);
@@ -180,6 +200,25 @@
             }, 200);
         }, 800);
 
-    }, 2200); // Start transition after 2.2s
+    }, 1200); // Start transition after 1.2s
+
+    // --- Failsafe ---
+    // Ensure overlay is removed even if something goes wrong
+    setTimeout(() => {
+        if (document.getElementById('intro-overlay')) {
+            const overlay = document.getElementById('intro-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+            }, 500);
+
+            if (mainContent) {
+                mainContent.style.opacity = '1';
+            }
+            if (heroCharan) {
+                heroCharan.style.opacity = '1';
+            }
+        }
+    }, 4000);
 
 })();
