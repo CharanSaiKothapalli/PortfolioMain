@@ -14,6 +14,12 @@
         href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Inter:wght@300;400;500;600&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    </script>
 </head>
 
 <body>
@@ -38,7 +44,7 @@
         <header id="home" class="hero-section">
             <div class="container hero-grid">
                 <div class="hero-text-left">
-                    <h2 class="sub-heading">CHARAN KOTHAPALLI</h2>
+                    <h2 class="sub-heading"><span id="hero-charan" style="opacity: 0">CHARAN</span> KOTHAPALLI</h2>
                     <h1 class="main-heading">AI & DATA<br>SCIENCE</h1>
                 </div>
                 <div class="hero-image-container">
