@@ -112,7 +112,7 @@ body {
     max-width: 1200px;
     /* Slightly tighter for better readability */
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0 clamp(1.5rem, 5vw, 2rem);
 }
 
 a {
@@ -223,7 +223,7 @@ a {
 .main-heading,
 .main-heading-right {
     font-family: var(--font-heading);
-    font-size: 5rem;
+    font-size: clamp(3rem, 8vw, 5rem);
     /* Slightly smaller for elegance */
     line-height: 1;
     font-weight: 700;
@@ -332,7 +332,7 @@ a {
 
 .big-title {
     font-family: var(--font-heading);
-    font-size: 4rem;
+    font-size: clamp(2.5rem, 6vw, 4rem);
     line-height: 1;
     margin-bottom: 2rem;
     color: var(--text-primary);
@@ -395,7 +395,7 @@ a {
 /* Section Headers */
 .section-header {
     font-family: var(--font-heading);
-    font-size: 3.5rem;
+    font-size: clamp(2.5rem, 5vw, 3.5rem);
     margin-bottom: 4rem;
     text-align: center;
     letter-spacing: -1px;
@@ -905,7 +905,7 @@ a {
         bottom: 0;
         left: 0;
         width: 100%;
-        background: rgba(15, 23, 42, 0.95);
+        background: var(--pill-bg);
         backdrop-filter: blur(15px);
         justify-content: space-around;
         padding: 12px 0;
@@ -1353,6 +1353,129 @@ a {
 }
 
 /* Mobile Responsive Adjustments */
+
+.git-connect svg {
+    width: 1rem;
+    height: 1rem;
+    margin-left: 0.5rem;
+    transition: transform 0.3s;
+}
+
+.git-card:hover .git-connect svg {
+    transform: translateX(0.25rem);
+}
+
+/* Gradient Utilities for Icons */
+.from-blue-600 {
+    --tw-gradient-from: #2563eb;
+}
+
+.to-blue-400 {
+    --tw-gradient-to: #60a5fa;
+}
+
+.from-gray-700 {
+    --tw-gradient-from: #374151;
+}
+
+.to-gray-500 {
+    --tw-gradient-to: #6b7280;
+}
+
+.from-slate-800 {
+    --tw-gradient-from: #1e293b;
+}
+
+.to-slate-600 {
+    --tw-gradient-to: #475569;
+}
+
+.from-purple-600 {
+    --tw-gradient-from: #9333ea;
+}
+
+.to-orange-500 {
+    --tw-gradient-to: #f97316;
+}
+
+.from-indigo-600 {
+    --tw-gradient-from: #4f46e5;
+}
+
+.to-purple-600 {
+    --tw-gradient-to: #9333ea;
+}
+
+.from-red-600 {
+    --tw-gradient-from: #dc2626;
+}
+
+.to-red-400 {
+    --tw-gradient-to: #f87171;
+}
+
+.from-emerald-600 {
+    --tw-gradient-from: #059669;
+}
+
+.to-emerald-400 {
+    --tw-gradient-to: #34d399;
+}
+
+
+/* Bottom CTA */
+.git-cta {
+    margin-top: 4rem;
+    text-align: center;
+}
+
+.git-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 2rem;
+    background: linear-gradient(to right, #2563eb, #9333ea);
+    border-radius: 9999px;
+    color: white;
+    font-weight: 500;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.git-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px -5px rgba(147, 51, 234, 0.4);
+}
+
+.git-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.7s;
+}
+
+.git-btn:hover::before {
+    transform: translateX(100%);
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.1);
+    }
+}
+
+/* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
     .git-title {
         font-size: 2.25rem;
@@ -1385,7 +1508,7 @@ a {
     border-radius: 50%;
     filter: blur(80px);
     opacity: 0;
-    animation: blobFadeIn 2s ease-out forwards;
+    animation: blobFadeIn 1.2s ease-out forwards;
 }
 
 .intro-blob-1 {
@@ -1429,11 +1552,12 @@ a {
     line-height: 1;
     transform: translateY(100%);
     /* Start hidden below */
-    animation: textReveal 1.2s cubic-bezier(0.2, 1, 0.3, 1) forwards;
-    background: var(--intro-text-gradient);
+    background: linear-gradient(120deg, #ffffff 0%, #cbd5e1 20%, #38bdf8 40%, #9333ea 60%, #cbd5e1 80%, #ffffff 100%);
+    background-size: 200% auto;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    animation: textReveal 0.8s cubic-bezier(0.2, 1, 0.3, 1) forwards, textShimmer 3s linear infinite;
 }
 
 @keyframes textReveal {
@@ -1443,6 +1567,37 @@ a {
 
     100% {
         transform: translateY(0);
+    }
+}
+
+@keyframes textShimmer {
+    to {
+        background-position: 200% center;
+    }
+}
+
+.intro-particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px white, 0 0 20px var(--accent);
+    opacity: 0;
+    pointer-events: none;
+    animation: particleFloat 3s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 0.8;
     }
 }
 
@@ -1458,7 +1613,6 @@ a {
     position: relative;
     z-index: 10;
 }
-
 
 #intro-overlay {
     backdrop-filter: blur(3px);
