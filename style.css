@@ -35,6 +35,12 @@
     --git-card-text: #6b7280;
     --git-card-text-hover: #9ca3af;
     --git-blob-opacity: 0.4;
+
+    /* Intro - Dark Mode */
+    --intro-bg: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+    --intro-text-gradient: linear-gradient(to bottom, #ffffff 0%, #cbd5e1 50%, #94a3b8 100%);
+    --intro-blob-1: rgba(56, 189, 248, 0.2);
+    --intro-blob-2: rgba(168, 85, 247, 0.2);
 }
 
 [data-theme="light"] {
@@ -65,6 +71,12 @@
     --git-card-text: #64748b;
     --git-card-text-hover: #475569;
     --git-blob-opacity: 0.2;
+
+    /* Intro - Light Mode */
+    --intro-bg: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%);
+    --intro-text-gradient: linear-gradient(to bottom, #0f172a 0%, #334155 50%, #475569 100%);
+    --intro-blob-1: rgba(14, 165, 233, 0.15);
+    --intro-blob-2: rgba(147, 51, 234, 0.15);
 }
 
 * {
@@ -1349,4 +1361,105 @@ a {
     .git-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* --- 2D Intro Animation --- */
+#intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--intro-bg);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    transition: opacity 0.8s ease-out;
+    overflow: hidden;
+}
+
+.intro-blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0;
+    animation: blobFadeIn 2s ease-out forwards;
+}
+
+.intro-blob-1 {
+    width: 30vw;
+    height: 30vw;
+    background: var(--intro-blob-1);
+    top: -10%;
+    left: -10%;
+    animation-delay: 0.2s;
+}
+
+.intro-blob-2 {
+    width: 35vw;
+    height: 35vw;
+    background: var(--intro-blob-2);
+    bottom: -10%;
+    right: -10%;
+    animation-delay: 0.4s;
+}
+
+@keyframes blobFadeIn {
+    to {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+.intro-text-wrapper {
+    overflow: hidden;
+    /* For the reveal effect */
+    position: relative;
+    z-index: 10;
+}
+
+.intro-text {
+    font-family: var(--font-heading);
+    font-size: 8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5rem;
+    line-height: 1;
+    transform: translateY(100%);
+    /* Start hidden below */
+    animation: textReveal 1.2s cubic-bezier(0.2, 1, 0.3, 1) forwards;
+    background: var(--intro-text-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+@keyframes textReveal {
+    0% {
+        transform: translateY(100%);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Responsive Intro */
+@media (max-width: 768px) {
+    .intro-text {
+        font-size: 4rem;
+        letter-spacing: 0.2rem;
+    }
+}
+
+#main-content {
+    position: relative;
+    z-index: 10;
+}
+
+
+#intro-overlay {
+    backdrop-filter: blur(3px);
 }
