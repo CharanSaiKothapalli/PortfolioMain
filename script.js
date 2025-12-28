@@ -114,10 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeIcon = themeToggle.querySelector('i');
     const htmlElement = document.documentElement;
 
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') {
-        htmlElement.setAttribute('data-theme', 'light');
+    // Sync icon with current theme
+    if (htmlElement.getAttribute('data-theme') === 'light') {
         themeIcon.classList.remove('fa-adjust');
         themeIcon.classList.add('fa-sun');
     }
